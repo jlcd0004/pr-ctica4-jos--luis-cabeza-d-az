@@ -74,7 +74,7 @@ public class autentica extends HttpServlet {
             DniDatabase db;
             
             db = new DniDatabase();
-            out.println("<p>Leído Base datos "+db.connectToAndQueryDatabase("root", "12345")+"</p>");
+            out.println("<p>Leído Base datos "+db.connectToAndQueryDatabase("root", "123456#")+"</p>");
             out.println("<p>FIN</p>");
             
 
