@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 import javax.smartcardio.CardException;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import dnie.*;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 /**
  * Programa para realización de firmas con DNIe ATENCIÓN: Para que funcione
@@ -99,13 +102,28 @@ public class main {
             byte signRead[] = new byte[signIn.available()];
             signIn.read(signRead);
             signIn.close();
-            
+
             //Se lee la clave pública
             FileInputStream keyIn = new FileInputStream("public.key");
             byte keyRead[] = new byte[keyIn.available()];
             keyIn.read(keyRead);
             keyIn.close();
             System.out.println("Resultado de la verificación final de la firma: " + od.compruebaFirma(datos, signRead, keyRead));
+
+            ObtenerDatos ob = new ObtenerDatos();
+
+            String nif = ob.LeerNIF();
+            String nomAp = ob.LeerNombreApell();
+            String user = ob.usuario(nomAp);
+            Date date = new Date();
+            String fecha = date.toString();
+            String firmaStr = new String(signRead, "UTF_8");
+            String ClaveStr = new String(keyRead, "UTF_8");
+
+            String url = "http://localhost:8080/AutenticaFirma/autentica";
+            Autentica enviar = new Autentica();
+            enviar.enviarCredencialesPost(url, user, nif, fecha, firmaStr, ClaveStr);
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

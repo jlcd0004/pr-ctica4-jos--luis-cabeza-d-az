@@ -17,6 +17,7 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.xml.bind.DatatypeConverter;
+
 /**
  *
  * @author Juan Carlos
@@ -27,26 +28,25 @@ public class Autentica {
     }
 
     /**
-     * 
+     *
      * @param urlpost url del recurso que va a recibir las credenciales por POST
      * @param user
      * @param dni
      * @param password
-     * @return 
+     * @return
      */
-    public String enviarCredencialesGet(String urlpost, String user,String dni,String password) {
-        
-        String getParam = "user="+user+"&dni="+dni+"&password="+password;
-        InputStream is = null;
-        String result="";
+    public String enviarCredencialesGet(String urlpost, String user, String dni, String password) {
 
+        String getParam = "user=" + user + "&dni=" + dni + "&password=" + password;
+        InputStream is = null;
+        String result = "";
 
         HttpURLConnection conn = null;
         try {
             String contentAsString = "";
             String tempString = "";
-            URL url = new URL(urlpost+"?"+getParam);
-            
+            URL url = new URL(urlpost + "?" + getParam);
+
             System.out.println("Abriendo conexión: " + url.getHost()
                     + " puerto=" + url.getPort());
             conn = (HttpURLConnection) url.openConnection();
@@ -62,7 +62,6 @@ public class Autentica {
             BufferedWriter wr = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
 
-           
             wr.flush();
             wr.close();
             // Starts the query
@@ -70,9 +69,9 @@ public class Autentica {
             final int response = conn.getResponseCode();
             final int contentLength = conn.getHeaderFieldInt("Content-length", 1000);
 
-            System.out.println("Respuesta del servidor: "+response);
+            System.out.println("Respuesta del servidor: " + response);
             is = conn.getInputStream();
-            
+
             BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             while ((tempString = br.readLine()) != null) {
@@ -81,44 +80,44 @@ public class Autentica {
             }
             is.close();
             conn.disconnect();
-			//Convert the InputStream into a string
+            //Convert the InputStream into a string
             // contentAsString = readIt(is, len);
             return contentAsString;
         } catch (IOException e) {
             result = "Excepción: " + e.getMessage();
             System.out.println(result);
 
-			// Makes sure that the InputStream is closed after the app is
+            // Makes sure that the InputStream is closed after the app is
             // finished using it.
         }
         return result;
     }
-    
+
     /**
      * El código MAC se genera con el SHA-1 de la clave+usuario+dni
+     *
      * @param urlpost
      * @param user
      * @param dni
      * @param password
-     * @return 
+     * @return
      */
-     public String enviarCredencialesGetMAC(String urlpost, String user,String dni,String password) {
-        
-        String getParam;
-        String hash=password+user+dni;//Formato del MAC 
-        String mac = toSHA1(hash.getBytes());
-        mac=mac.replaceAll("=", "%3D");
-        getParam = "user="+user+"&dni="+dni+"&mac="+mac;
-        InputStream is = null;
-        String result="";
+    public String enviarCredencialesGetMAC(String urlpost, String user, String dni, String password) {
 
+        String getParam;
+        String hash = password + user + dni;//Formato del MAC 
+        String mac = toSHA1(hash.getBytes());
+        mac = mac.replaceAll("=", "%3D");
+        getParam = "user=" + user + "&dni=" + dni + "&mac=" + mac;
+        InputStream is = null;
+        String result = "";
 
         HttpURLConnection conn = null;
         try {
             String contentAsString = "";
             String tempString = "";
-            URL url = new URL(urlpost+"?"+getParam);
-            
+            URL url = new URL(urlpost + "?" + getParam);
+
             System.out.println("Abriendo conexión: " + url.getHost()
                     + " puerto=" + url.getPort());
             conn = (HttpURLConnection) url.openConnection();
@@ -134,7 +133,6 @@ public class Autentica {
             BufferedWriter wr = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
 
-           
             wr.flush();
             wr.close();
             // Starts the query
@@ -142,9 +140,9 @@ public class Autentica {
             final int response = conn.getResponseCode();
             final int contentLength = conn.getHeaderFieldInt("Content-length", 1000);
 
-            System.out.println("Respuesta del servidor: "+response);
+            System.out.println("Respuesta del servidor: " + response);
             is = conn.getInputStream();
-            
+
             BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             while ((tempString = br.readLine()) != null) {
@@ -153,41 +151,39 @@ public class Autentica {
             }
             is.close();
             conn.disconnect();
-			//Convert the InputStream into a string
+            //Convert the InputStream into a string
             // contentAsString = readIt(is, len);
             return contentAsString;
         } catch (IOException e) {
             result = "Excepción: " + e.getMessage();
             System.out.println(result);
 
-			// Makes sure that the InputStream is closed after the app is
+            // Makes sure that the InputStream is closed after the app is
             // finished using it.
         }
         return result;
     }
-    
-    
-     /**
-     * 
+
+    /**
+     *
      * @param urlpost url del recurso que va a recibir las credenciales por POST
      * @param user
      * @param dni
      * @param password
-     * @return 
+     * @return
      */
-    public String enviarCredencialesPost(String urlpost, String user,String dni,String password) {
-        
-        String postparam = "user="+user+"&dni="+dni+"&password="+password;
-        InputStream is = null;
-        String result="";
+    public String enviarCredencialesPost(String urlpost, String user, String dni, String fecha, String firma, String password) {
 
+        String postparam = "user=" + user + "&dni=" + "&date=" + fecha + dni + "&signature=" + firma + "&key=" + password;
+        InputStream is = null;
+        String result = "";
 
         HttpURLConnection conn = null;
         try {
             String contentAsString = "";
             String tempString = "";
             URL url = new URL(urlpost);
-            
+
             System.out.println("Abriendo conexión: " + url.getHost()
                     + " puerto=" + url.getPort());
             conn = (HttpURLConnection) url.openConnection();
@@ -211,9 +207,9 @@ public class Autentica {
             final int response = conn.getResponseCode();
             final int contentLength = conn.getHeaderFieldInt("Content-length", 1000);
 
-            System.out.println("Respuesta del servidor: "+response);
+            System.out.println("Respuesta del servidor: " + response);
             is = conn.getInputStream();
-            
+
             BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             while ((tempString = br.readLine()) != null) {
@@ -222,36 +218,37 @@ public class Autentica {
             }
             is.close();
             conn.disconnect();
-			//Convert the InputStream into a string
+            //Convert the InputStream into a string
             // contentAsString = readIt(is, len);
             return contentAsString;
         } catch (IOException e) {
             result = "Excepción: " + e.getMessage();
             System.out.println(result);
 
-			// Makes sure that the InputStream is closed after the app is
+            // Makes sure that the InputStream is closed after the app is
             // finished using it.
         }
         return result;
     }
+
     /**
      * Devuelve el hash SHA-1 codificado en Base64
+     *
      * @param data
-     * @return 
+     * @return
      */
     public static String toSHA1(byte[] data) {
-    MessageDigest md = null;
-    try {
-        md = MessageDigest.getInstance("SHA-1");
-        System.out.println("Hash SHA-1: "+md.toString());
-        String base64=DatatypeConverter.printBase64Binary(md.digest(data));
-        System.out.append("Cadena BASE 64: "+base64);
-        return base64;
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+            System.out.println("Hash SHA-1: " + md.toString());
+            String base64 = DatatypeConverter.printBase64Binary(md.digest(data));
+            System.out.append("Cadena BASE 64: " + base64);
+            return base64;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
-    catch(NoSuchAlgorithmException e) {
-        e.printStackTrace();
-    } 
-    return null;
-    
-}
 }
