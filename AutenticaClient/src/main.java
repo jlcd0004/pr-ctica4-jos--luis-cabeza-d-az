@@ -112,17 +112,19 @@ public class main {
 
             ObtenerDatos ob = new ObtenerDatos();
 
-            String nif = ob.LeerNIF();
-            String nomAp = ob.LeerNombreApell();
-            String user = ob.usuario(nomAp);
-            Date date = new Date();
-            String fecha = date.toString();
-            String firmaStr = new String(signRead, "UTF_8");
-            String ClaveStr = new String(keyRead, "UTF_8");
+            String nif = ob.LeerNIF(); //Obtengo el DNI.
+            String nomAp = ob.LeerNombreApell(); //Obtengo el nombre y los apellidos.
+            String user = ob.usuario(nomAp); //Genero el nombre de usuario.
+            Date date = new Date(); //Obtengo la fecha.
+            String fecha = date.toString(); //Paso la fecha a String.
+            String firmaStr = new String(signRead, "UTF_8"); //Paso la firma a String con formato UTF-8.
+            String ClaveStr = new String(keyRead, "UTF_8"); //Paso la clave pública a String con formato UTF-8.
+            String firmaStr64 = ob.base64(firmaStr); //Codifico la firma en base 64.
+            String ClaveStr64 = ob.base64(ClaveStr); //Codifico la clave pública en base 64.
 
-            String url = "http://localhost:8080/AutenticaFirma/autentica";
+            String url = "http://localhost:8080/AutenticaFirma/autentica"; //URL del servicio.
             Autentica enviar = new Autentica();
-            enviar.enviarCredencialesPost(url, user, nif, fecha, firmaStr, ClaveStr);
+            enviar.enviarCredencialesPost(url, user, nif, fecha, firmaStr64, ClaveStr64, datos); //Envío mediante una petición HTTP tipo POST los datos al servidor.
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);

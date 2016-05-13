@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 
-
 /**
  *
  * @author Juan Carlos
@@ -48,11 +47,16 @@ public class autentica extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response, String resultado) //Resultado de la comprobación añadido (OK o ERROR).
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
+            user = request.getParameter("user");
+            dni = request.getParameter("dni");
+            date = request.getParameter("date");
+            signBase64 = request.getParameter("signature");
+            keyBase64 = request.getParameter("key");
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -62,21 +66,23 @@ public class autentica extends HttpServlet {
             out.println("<body>");
             out.println("<h1>Autenticación de Firma</h1>");
             out.println("<p>");
-            out.println("Datos: "+user+" "+dni+" "+date);
+            out.println("Datos: " + user + " " + dni + " " + date);
             out.println("</p>");
             out.println("<p>");
-            out.println("Firma: "+signBase64);
+            out.println("Firma: " + signBase64);
             out.println("</p>");
             out.println("<p>");
-            out.println("Key: "+keyBase64);
+            out.println("Key: " + keyBase64);
             out.println("</p>");
-            
+            out.println("<p>");
+            out.println("Resultado de la comprobaci&oacuten de firma: " + resultado); //Resultado de la comprobación añadido (OK o ERROR).
+            out.println("</p>");
+
             DniDatabase db;
-            
+
             db = new DniDatabase();
-            out.println("<p>Leído Base datos "+db.connectToAndQueryDatabase("root", "123456#")+"</p>");
+            out.println("<p>Leído Base datos " + db.connectToAndQueryDatabase("root", "123456#") + "</p>");
             out.println("<p>FIN</p>");
-            
 
             out.println("</body>");
             out.println("</html>");
@@ -101,15 +107,14 @@ public class autentica extends HttpServlet {
         user = request.getParameter("user");
         dni = request.getParameter("dni");
         date = request.getParameter("date");
-        
+
         signBase64 = request.getParameter("signature");
         keyBase64 = request.getParameter("key");
 
-        
         sign = DatatypeConverter.parseBase64Binary(signBase64);
         key = DatatypeConverter.parseBase64Binary(keyBase64);
 
-        processRequest(request, response);
+        //   processRequest(request, response);
     }
 
     /**
@@ -123,19 +128,25 @@ public class autentica extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String datos, resultado;
+        Boolean res;
         user = request.getParameter("user");
         dni = request.getParameter("dni");
         date = request.getParameter("date");
-        
+        datos = request.getParameter("datos");
         signBase64 = request.getParameter("signature");
         keyBase64 = request.getParameter("key");
 
-        
         sign = DatatypeConverter.parseBase64Binary(signBase64);
         key = DatatypeConverter.parseBase64Binary(keyBase64);
 
-        
-        processRequest(request, response);
+        res = compruebaFirma(datos, sign, key); //Compruebo la firma.
+        if (res == true) { //Firma correcta.
+            resultado = "OK";
+        } else {//Firma incorrecta.
+            resultado = "ERROR";
+        }
+        processRequest(request, response, resultado);
     }
 
     /**
@@ -148,8 +159,7 @@ public class autentica extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
-     public boolean compruebaFirma(String datos, byte[] signRead,byte[]keyRead) {
+    public boolean compruebaFirma(String datos, byte[] signRead, byte[] keyRead) {
 
         try {
             if (datos == null) {
@@ -161,7 +171,7 @@ public class autentica extends HttpServlet {
             X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(keyRead);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
-            
+
             //Se prepara el objeto Signature para comprobar la firma
             Signature sigver2 = Signature.getInstance("SHA1withRSA");
             //Se añade la clave pública
@@ -170,16 +180,15 @@ public class autentica extends HttpServlet {
             sigver2.update(data);
             //Se realiza la comprobación, si es correcta devolverá TRUE
             return sigver2.verify(signRead);
-            
+
         } catch (NoSuchAlgorithmException ex) {
-           
+
         } catch (InvalidKeySpecException ex) {
-            
+
         } catch (InvalidKeyException ex) {
-           
+
         } catch (SignatureException ex) {
-            
-         
+
         }
         return false;
     }

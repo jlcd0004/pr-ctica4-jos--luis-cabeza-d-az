@@ -169,12 +169,15 @@ public class Autentica {
      * @param urlpost url del recurso que va a recibir las credenciales por POST
      * @param user
      * @param dni
+     * @param fecha
+     * @param firma
      * @param password
+     * @param datos
      * @return
      */
-    public String enviarCredencialesPost(String urlpost, String user, String dni, String fecha, String firma, String password) {
+    public String enviarCredencialesPost(String urlpost, String user, String dni, String fecha, String firma, String password, String datos) {
 
-        String postparam = "user=" + user + "&dni=" + "&date=" + fecha + dni + "&signature=" + firma + "&key=" + password;
+        String postparam = "user=" + user + "&dni=" + "&date=" + fecha + dni + "&signature=" + firma + "&key=" + password + "&datos=" + datos;
         InputStream is = null;
         String result = "";
 
